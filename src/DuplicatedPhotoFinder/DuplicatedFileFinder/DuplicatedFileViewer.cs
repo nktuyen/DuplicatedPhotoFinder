@@ -15,11 +15,13 @@ namespace DuplicatedFileFinder
 {
     public partial class DuplicatedFileViewer : Form
     {
-        private List<string> Files { get; set; }
+        public List<string> Files { get; set; }
+        private int OriginalCOunt { get; set; } = 0;
         public DuplicatedFileViewer(List<string> files)
         {
             InitializeComponent();
             this.Files = files;
+            this.OriginalCOunt = this.Files.Count;
         }
 
         private void DuplicatedFileViewer_Load(object sender, EventArgs e)
@@ -37,7 +39,11 @@ namespace DuplicatedFileFinder
         {
             try
             {
-                PreviewPicture.Image = Image.FromFile(FileListBox.SelectedItem as string);
+                using (var stream = new FileStream (FileListBox.SelectedItem as string, FileMode.Open))
+                {
+                    PreviewPicture.Image = Image.FromStream(stream);
+                    stream.Close();
+                }
             }
             catch (Exception ex){
                 Debug.Print(ex.Message);
@@ -60,6 +66,8 @@ namespace DuplicatedFileFinder
                 try
                 {
                     File.Delete(FileListBox.SelectedItem as string);
+                    string path = FileListBox.SelectedItem as string;
+                    this.Files.Remove(path);
                     FileListBox.Items.RemoveAt(FileListBox.SelectedIndex);
                 }
                 catch(Exception ex)
@@ -85,6 +93,17 @@ namespace DuplicatedFileFinder
             {
                 Debug.Print(ex.Message);
             }
+        }
+
+        private void DuplicatedFileViewer_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            if (this.OriginalCOunt != this.Files.Count)
+                this.DialogResult = DialogResult.OK;
+        }
+
+        private void DuplicatedFileViewer_FormClosing(object sender, FormClosingEventArgs e)
+        {
+
         }
     }
 }

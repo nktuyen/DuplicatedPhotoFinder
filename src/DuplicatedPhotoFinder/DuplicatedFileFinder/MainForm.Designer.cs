@@ -64,6 +64,7 @@
             // 
             // DirectoriesListView
             // 
+            this.DirectoriesListView.AllowDrop = true;
             this.DirectoriesListView.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.DirectoriesListView.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
@@ -83,6 +84,8 @@
             this.DirectoriesListView.View = System.Windows.Forms.View.Details;
             this.DirectoriesListView.ItemActivate += new System.EventHandler(this.DirectoriesListView_ItemActivate);
             this.DirectoriesListView.SelectedIndexChanged += new System.EventHandler(this.DirectoriesListView_SelectedIndexChanged);
+            this.DirectoriesListView.DragDrop += new System.Windows.Forms.DragEventHandler(this.DirectoriesListView_DragDrop);
+            this.DirectoriesListView.DragEnter += new System.Windows.Forms.DragEventHandler(this.DirectoriesListView_DragEnter);
             // 
             // colOrder
             // 
@@ -331,6 +334,7 @@
             this.ResultListView.UseCompatibleStateImageBehavior = false;
             this.ResultListView.View = System.Windows.Forms.View.Details;
             this.ResultListView.DoubleClick += new System.EventHandler(this.ResultListView_DoubleClick);
+            this.ResultListView.KeyUp += new System.Windows.Forms.KeyEventHandler(this.ResultListView_KeyUp);
             // 
             // colIndex
             // 
@@ -339,12 +343,12 @@
             // colItem
             // 
             this.colItem.Text = "Item";
-            this.colItem.Width = 540;
+            this.colItem.Width = 500;
             // 
             // colDuplicatedCount
             // 
-            this.colDuplicatedCount.Text = "Count";
-            this.colDuplicatedCount.Width = 40;
+            this.colDuplicatedCount.Text = "Duplicated Count";
+            this.colDuplicatedCount.Width = 100;
             // 
             // MainForm
             // 

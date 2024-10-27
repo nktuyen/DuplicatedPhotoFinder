@@ -189,7 +189,6 @@ namespace DuplicatedFileFinder
             foreach (string path in this.Directories)
                 this.DirSearch(path, FilterFileTypesTextBox.Text);
 
-            FileImageList.Images.Clear();
             foreach(string hash in this.DuplicatedFilesMap.Keys)
             {
                 if (AnalyzerWorker.CancellationPending)
@@ -238,14 +237,18 @@ namespace DuplicatedFileFinder
 
                     using (var md5 = MD5.Create())
                     {
-                        using (var stream = File.OpenRead(f))
+                        using (var stream = new System.IO.FileStream(f, FileMode.Open))
                         {
                             hash = BitConverter.ToString(md5.ComputeHash(stream));
-                            if (!this.DuplicatedFilesMap.ContainsKey(hash)) {
+                            stream.Close();
+                            if (!this.DuplicatedFilesMap.ContainsKey(hash))
+                            {
                                 List<string> duplicatedFiles = new List<string>();
                                 duplicatedFiles.Add(f);
                                 this.DuplicatedFilesMap[hash] = duplicatedFiles;
-                            } else {
+                            }
+                            else
+                            {
                                 List<string> duplicatedFiles = this.DuplicatedFilesMap[hash];
                                 if (!duplicatedFiles.Contains(f))
                                     duplicatedFiles.Add(f);
@@ -303,7 +306,44 @@ namespace DuplicatedFileFinder
             DuplicatedFileViewer fileViewer = new DuplicatedFileViewer(ResultListView.SelectedItems[0].Tag as List<string>);
             if (fileViewer.ShowDialog() != DialogResult.OK)
                 return;
+            ListViewItem selItem = ResultListView.SelectedItems[0] as ListViewItem;
+            selItem.SubItems[2].Text = string.Format("{0}", fileViewer.Files.Count);
         }
-        
+
+        private void ResultListView_KeyUp(object sender, KeyEventArgs e)
+        {
+            ResultListView_DoubleClick(sender, e);
+        }
+
+        private void DirectoriesListView_DragEnter(object sender, DragEventArgs e)
+        {
+            if (e.Data.GetDataPresent(DataFormats.FileDrop))
+            {
+                e.Effect = DragDropEffects.Copy;
+            }
+        }
+
+        private void DirectoriesListView_DragDrop(object sender, DragEventArgs e)
+        {
+            string[] handles = (string[])e.Data.GetData(DataFormats.FileDrop, false);
+            foreach(string path in handles)
+            {
+                if (Directory.Exists(path)) {
+                    ListViewItem item = null;
+                    for (int i = 0; i < DirectoriesListView.Items.Count; i++)
+                    {
+                        item = DirectoriesListView.Items[i] as ListViewItem;
+                        if (string.Compare(item.SubItems[1].Text, path, true) == 0)
+                        {
+                            MessageBox.Show("Directory is already in the list\n"+ path, "Info", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                            return;
+                        }
+                    }
+                    item = DirectoriesListView.Items.Add(string.Format("{0}", DirectoriesListView.Items.Count + 1));
+                    item.SubItems.Add(path);
+                    DirectoryListChanged?.Invoke(new EventArgs());
+                }
+            }
+        }
     }
 }

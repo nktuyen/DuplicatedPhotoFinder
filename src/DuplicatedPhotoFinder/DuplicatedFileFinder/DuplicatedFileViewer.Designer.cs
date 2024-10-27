@@ -71,6 +71,8 @@
             this.ShowInTaskbar = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "DuplicatedFileViewer";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.DuplicatedFileViewer_FormClosing);
+            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.DuplicatedFileViewer_FormClosed);
             this.Load += new System.EventHandler(this.DuplicatedFileViewer_Load);
             this.KeyUp += new System.Windows.Forms.KeyEventHandler(this.DuplicatedFileViewer_KeyUp);
             ((System.ComponentModel.ISupportInitialize)(this.PreviewPicture)).EndInit();
