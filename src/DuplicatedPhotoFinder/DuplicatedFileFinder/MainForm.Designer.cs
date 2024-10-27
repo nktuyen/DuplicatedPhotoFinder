@@ -53,6 +53,21 @@
             this.StopButton = new System.Windows.Forms.Button();
             this.AnalyzerWorker = new System.ComponentModel.BackgroundWorker();
             this.FileImageList = new System.Windows.Forms.ImageList(this.components);
+            this.ResolveButton = new System.Windows.Forms.Button();
+            this.ResolverWorker = new System.ComponentModel.BackgroundWorker();
+            this.ResolveCancelButton = new System.Windows.Forms.Button();
+            this.StrategyGroupbox = new System.Windows.Forms.GroupBox();
+            this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.SpecifiedMoveToPathLabel = new System.Windows.Forms.Label();
+            this.BrowseSpecifiedDirButton = new System.Windows.Forms.Button();
+            this.MoveToSpecifiedDirOption = new System.Windows.Forms.RadioButton();
+            this.PermanentDeleteOption = new System.Windows.Forms.RadioButton();
+            this.MoveToTrashOption = new System.Windows.Forms.RadioButton();
+            this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.KeepLastFileOption = new System.Windows.Forms.RadioButton();
+            this.KeepFirstFileOption = new System.Windows.Forms.RadioButton();
+            this.KeepOldestFileOption = new System.Windows.Forms.RadioButton();
+            this.KeepNewestFileOption = new System.Windows.Forms.RadioButton();
             this.ResultListView = new DuplicatedFileFinder.ListViewEx();
             this.colIndex = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.colItem = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
@@ -60,6 +75,9 @@
             this.directoriesListContextMenu.SuspendLayout();
             this.FilterGroupBox.SuspendLayout();
             this.StatusBar.SuspendLayout();
+            this.StrategyGroupbox.SuspendLayout();
+            this.groupBox2.SuspendLayout();
+            this.groupBox1.SuspendLayout();
             this.SuspendLayout();
             // 
             // DirectoriesListView
@@ -251,7 +269,7 @@
             // 
             this.label4.AutoSize = true;
             this.label4.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label4.Location = new System.Drawing.Point(13, 213);
+            this.label4.Location = new System.Drawing.Point(12, 300);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(119, 15);
             this.label4.TabIndex = 7;
@@ -310,6 +328,175 @@
             this.FileImageList.ImageSize = new System.Drawing.Size(16, 16);
             this.FileImageList.TransparentColor = System.Drawing.Color.Transparent;
             // 
+            // ResolveButton
+            // 
+            this.ResolveButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.ResolveButton.Enabled = false;
+            this.ResolveButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.ResolveButton.Location = new System.Drawing.Point(675, 298);
+            this.ResolveButton.Name = "ResolveButton";
+            this.ResolveButton.Size = new System.Drawing.Size(96, 88);
+            this.ResolveButton.TabIndex = 10;
+            this.ResolveButton.Text = "Resolve";
+            this.ResolveButton.UseVisualStyleBackColor = true;
+            this.ResolveButton.Click += new System.EventHandler(this.ResolveButton_Click);
+            // 
+            // ResolverWorker
+            // 
+            this.ResolverWorker.WorkerReportsProgress = true;
+            this.ResolverWorker.WorkerSupportsCancellation = true;
+            this.ResolverWorker.DoWork += new System.ComponentModel.DoWorkEventHandler(this.ResolverWorker_DoWork);
+            this.ResolverWorker.ProgressChanged += new System.ComponentModel.ProgressChangedEventHandler(this.ResolverWorker_ProgressChanged);
+            this.ResolverWorker.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.ResolverWorker_RunWorkerCompleted);
+            // 
+            // ResolveCancelButton
+            // 
+            this.ResolveCancelButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.ResolveCancelButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.ResolveCancelButton.Location = new System.Drawing.Point(675, 298);
+            this.ResolveCancelButton.Name = "ResolveCancelButton";
+            this.ResolveCancelButton.Size = new System.Drawing.Size(96, 88);
+            this.ResolveCancelButton.TabIndex = 11;
+            this.ResolveCancelButton.Text = "&Cancel";
+            this.ResolveCancelButton.UseVisualStyleBackColor = true;
+            this.ResolveCancelButton.Visible = false;
+            this.ResolveCancelButton.Click += new System.EventHandler(this.ResolveCancelButton_Click);
+            // 
+            // StrategyGroupbox
+            // 
+            this.StrategyGroupbox.Controls.Add(this.groupBox2);
+            this.StrategyGroupbox.Controls.Add(this.groupBox1);
+            this.StrategyGroupbox.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.StrategyGroupbox.Location = new System.Drawing.Point(15, 210);
+            this.StrategyGroupbox.Name = "StrategyGroupbox";
+            this.StrategyGroupbox.Size = new System.Drawing.Size(654, 87);
+            this.StrategyGroupbox.TabIndex = 12;
+            this.StrategyGroupbox.TabStop = false;
+            this.StrategyGroupbox.Text = " Strategy";
+            // 
+            // groupBox2
+            // 
+            this.groupBox2.Controls.Add(this.SpecifiedMoveToPathLabel);
+            this.groupBox2.Controls.Add(this.BrowseSpecifiedDirButton);
+            this.groupBox2.Controls.Add(this.MoveToSpecifiedDirOption);
+            this.groupBox2.Controls.Add(this.PermanentDeleteOption);
+            this.groupBox2.Controls.Add(this.MoveToTrashOption);
+            this.groupBox2.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.groupBox2.Location = new System.Drawing.Point(235, 20);
+            this.groupBox2.Name = "groupBox2";
+            this.groupBox2.Size = new System.Drawing.Size(413, 40);
+            this.groupBox2.TabIndex = 1;
+            this.groupBox2.TabStop = false;
+            this.groupBox2.Text = "Deletion";
+            // 
+            // SpecifiedMoveToPathLabel
+            // 
+            this.SpecifiedMoveToPathLabel.AutoEllipsis = true;
+            this.SpecifiedMoveToPathLabel.Location = new System.Drawing.Point(257, 17);
+            this.SpecifiedMoveToPathLabel.Name = "SpecifiedMoveToPathLabel";
+            this.SpecifiedMoveToPathLabel.Size = new System.Drawing.Size(130, 15);
+            this.SpecifiedMoveToPathLabel.TabIndex = 2;
+            this.SpecifiedMoveToPathLabel.Text = "specified directory";
+            // 
+            // BrowseSpecifiedDirButton
+            // 
+            this.BrowseSpecifiedDirButton.Location = new System.Drawing.Point(387, 12);
+            this.BrowseSpecifiedDirButton.Name = "BrowseSpecifiedDirButton";
+            this.BrowseSpecifiedDirButton.Size = new System.Drawing.Size(24, 23);
+            this.BrowseSpecifiedDirButton.TabIndex = 1;
+            this.BrowseSpecifiedDirButton.Text = "...";
+            this.BrowseSpecifiedDirButton.UseVisualStyleBackColor = true;
+            this.BrowseSpecifiedDirButton.Click += new System.EventHandler(this.BrowseSpecifiedDirButton_Click);
+            // 
+            // MoveToSpecifiedDirOption
+            // 
+            this.MoveToSpecifiedDirOption.AutoSize = true;
+            this.MoveToSpecifiedDirOption.Location = new System.Drawing.Point(194, 15);
+            this.MoveToSpecifiedDirOption.Name = "MoveToSpecifiedDirOption";
+            this.MoveToSpecifiedDirOption.Size = new System.Drawing.Size(68, 19);
+            this.MoveToSpecifiedDirOption.TabIndex = 0;
+            this.MoveToSpecifiedDirOption.Text = "Move to";
+            this.MoveToSpecifiedDirOption.UseVisualStyleBackColor = true;
+            this.MoveToSpecifiedDirOption.Click += new System.EventHandler(this.MoveToSpecifiedDirOption_Click);
+            // 
+            // PermanentDeleteOption
+            // 
+            this.PermanentDeleteOption.AutoSize = true;
+            this.PermanentDeleteOption.Location = new System.Drawing.Point(127, 15);
+            this.PermanentDeleteOption.Name = "PermanentDeleteOption";
+            this.PermanentDeleteOption.Size = new System.Drawing.Size(61, 19);
+            this.PermanentDeleteOption.TabIndex = 0;
+            this.PermanentDeleteOption.Text = "Delete";
+            this.PermanentDeleteOption.UseVisualStyleBackColor = true;
+            // 
+            // MoveToTrashOption
+            // 
+            this.MoveToTrashOption.AutoSize = true;
+            this.MoveToTrashOption.Checked = true;
+            this.MoveToTrashOption.Location = new System.Drawing.Point(19, 15);
+            this.MoveToTrashOption.Name = "MoveToTrashOption";
+            this.MoveToTrashOption.Size = new System.Drawing.Size(102, 19);
+            this.MoveToTrashOption.TabIndex = 0;
+            this.MoveToTrashOption.TabStop = true;
+            this.MoveToTrashOption.Text = "Move to Trash";
+            this.MoveToTrashOption.UseVisualStyleBackColor = true;
+            // 
+            // groupBox1
+            // 
+            this.groupBox1.Controls.Add(this.KeepNewestFileOption);
+            this.groupBox1.Controls.Add(this.KeepOldestFileOption);
+            this.groupBox1.Controls.Add(this.KeepLastFileOption);
+            this.groupBox1.Controls.Add(this.KeepFirstFileOption);
+            this.groupBox1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.groupBox1.Location = new System.Drawing.Point(43, 20);
+            this.groupBox1.Name = "groupBox1";
+            this.groupBox1.Size = new System.Drawing.Size(186, 61);
+            this.groupBox1.TabIndex = 0;
+            this.groupBox1.TabStop = false;
+            this.groupBox1.Text = "Keep";
+            // 
+            // KeepLastFileOption
+            // 
+            this.KeepLastFileOption.AutoSize = true;
+            this.KeepLastFileOption.Location = new System.Drawing.Point(100, 15);
+            this.KeepLastFileOption.Name = "KeepLastFileOption";
+            this.KeepLastFileOption.Size = new System.Drawing.Size(67, 19);
+            this.KeepLastFileOption.TabIndex = 0;
+            this.KeepLastFileOption.Text = "Last file";
+            this.KeepLastFileOption.UseVisualStyleBackColor = true;
+            // 
+            // KeepFirstFileOption
+            // 
+            this.KeepFirstFileOption.AutoSize = true;
+            this.KeepFirstFileOption.Checked = true;
+            this.KeepFirstFileOption.Location = new System.Drawing.Point(19, 15);
+            this.KeepFirstFileOption.Name = "KeepFirstFileOption";
+            this.KeepFirstFileOption.Size = new System.Drawing.Size(67, 19);
+            this.KeepFirstFileOption.TabIndex = 0;
+            this.KeepFirstFileOption.TabStop = true;
+            this.KeepFirstFileOption.Text = "First file";
+            this.KeepFirstFileOption.UseVisualStyleBackColor = true;
+            // 
+            // KeepOldestFileOption
+            // 
+            this.KeepOldestFileOption.AutoSize = true;
+            this.KeepOldestFileOption.Location = new System.Drawing.Point(19, 36);
+            this.KeepOldestFileOption.Name = "KeepOldestFileOption";
+            this.KeepOldestFileOption.Size = new System.Drawing.Size(79, 19);
+            this.KeepOldestFileOption.TabIndex = 0;
+            this.KeepOldestFileOption.Text = "Oldest file";
+            this.KeepOldestFileOption.UseVisualStyleBackColor = true;
+            // 
+            // KeepNewestFileOption
+            // 
+            this.KeepNewestFileOption.AutoSize = true;
+            this.KeepNewestFileOption.Location = new System.Drawing.Point(100, 36);
+            this.KeepNewestFileOption.Name = "KeepNewestFileOption";
+            this.KeepNewestFileOption.Size = new System.Drawing.Size(85, 19);
+            this.KeepNewestFileOption.TabIndex = 0;
+            this.KeepNewestFileOption.Text = "Newest file";
+            this.KeepNewestFileOption.UseVisualStyleBackColor = true;
+            // 
             // ResultListView
             // 
             this.ResultListView.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
@@ -324,26 +511,28 @@
             this.ResultListView.GridLines = true;
             this.ResultListView.HideSelection = false;
             this.ResultListView.LargeImageList = this.FileImageList;
-            this.ResultListView.Location = new System.Drawing.Point(12, 232);
+            this.ResultListView.Location = new System.Drawing.Point(12, 318);
             this.ResultListView.MultiSelect = false;
             this.ResultListView.Name = "ResultListView";
             this.ResultListView.ShowItemToolTips = true;
-            this.ResultListView.Size = new System.Drawing.Size(657, 304);
+            this.ResultListView.Size = new System.Drawing.Size(657, 218);
             this.ResultListView.SmallImageList = this.FileImageList;
             this.ResultListView.TabIndex = 4;
             this.ResultListView.UseCompatibleStateImageBehavior = false;
             this.ResultListView.View = System.Windows.Forms.View.Details;
+            this.ResultListView.SelectedIndexChanged += new System.EventHandler(this.ResultListView_SelectedIndexChanged);
             this.ResultListView.DoubleClick += new System.EventHandler(this.ResultListView_DoubleClick);
             this.ResultListView.KeyUp += new System.Windows.Forms.KeyEventHandler(this.ResultListView_KeyUp);
             // 
             // colIndex
             // 
             this.colIndex.Text = "#";
+            this.colIndex.Width = 40;
             // 
             // colItem
             // 
             this.colItem.Text = "Item";
-            this.colItem.Width = 500;
+            this.colItem.Width = 480;
             // 
             // colDuplicatedCount
             // 
@@ -355,14 +544,17 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(784, 561);
+            this.Controls.Add(this.StrategyGroupbox);
+            this.Controls.Add(this.ResolveButton);
             this.Controls.Add(this.StatusBar);
             this.Controls.Add(this.label4);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.FilterGroupBox);
             this.Controls.Add(this.ResultListView);
             this.Controls.Add(this.DirectoriesListView);
-            this.Controls.Add(this.StopButton);
             this.Controls.Add(this.StartButton);
+            this.Controls.Add(this.StopButton);
+            this.Controls.Add(this.ResolveCancelButton);
             this.KeyPreview = true;
             this.MinimumSize = new System.Drawing.Size(800, 600);
             this.Name = "MainForm";
@@ -375,6 +567,11 @@
             this.FilterGroupBox.PerformLayout();
             this.StatusBar.ResumeLayout(false);
             this.StatusBar.PerformLayout();
+            this.StrategyGroupbox.ResumeLayout(false);
+            this.groupBox2.ResumeLayout(false);
+            this.groupBox2.PerformLayout();
+            this.groupBox1.ResumeLayout(false);
+            this.groupBox1.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -410,5 +607,20 @@
         private System.Windows.Forms.ColumnHeader colItem;
         private System.Windows.Forms.ColumnHeader colDuplicatedCount;
         private System.Windows.Forms.ImageList FileImageList;
+        private System.Windows.Forms.Button ResolveButton;
+        private System.ComponentModel.BackgroundWorker ResolverWorker;
+        private System.Windows.Forms.Button ResolveCancelButton;
+        private System.Windows.Forms.GroupBox StrategyGroupbox;
+        private System.Windows.Forms.GroupBox groupBox1;
+        private System.Windows.Forms.RadioButton KeepLastFileOption;
+        private System.Windows.Forms.RadioButton KeepFirstFileOption;
+        private System.Windows.Forms.GroupBox groupBox2;
+        private System.Windows.Forms.Label SpecifiedMoveToPathLabel;
+        private System.Windows.Forms.Button BrowseSpecifiedDirButton;
+        private System.Windows.Forms.RadioButton MoveToSpecifiedDirOption;
+        private System.Windows.Forms.RadioButton PermanentDeleteOption;
+        private System.Windows.Forms.RadioButton MoveToTrashOption;
+        private System.Windows.Forms.RadioButton KeepNewestFileOption;
+        private System.Windows.Forms.RadioButton KeepOldestFileOption;
     }
 }

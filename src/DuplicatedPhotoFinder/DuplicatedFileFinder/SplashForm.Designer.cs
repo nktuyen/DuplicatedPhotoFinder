@@ -42,11 +42,15 @@
             // 
             // splashProgressBar
             // 
+            this.splashProgressBar.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.splashProgressBar.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(192)))), ((int)(((byte)(192)))));
             this.splashProgressBar.ForeColor = System.Drawing.Color.Silver;
-            this.splashProgressBar.Location = new System.Drawing.Point(2, 375);
+            this.splashProgressBar.Location = new System.Drawing.Point(1, 195);
+            this.splashProgressBar.MarqueeAnimationSpeed = 50;
             this.splashProgressBar.Name = "splashProgressBar";
-            this.splashProgressBar.Size = new System.Drawing.Size(595, 23);
+            this.splashProgressBar.Size = new System.Drawing.Size(357, 4);
+            this.splashProgressBar.Step = 1;
             this.splashProgressBar.Style = System.Windows.Forms.ProgressBarStyle.Marquee;
             this.splashProgressBar.TabIndex = 0;
             // 
@@ -55,7 +59,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
-            this.ClientSize = new System.Drawing.Size(600, 400);
+            this.ClientSize = new System.Drawing.Size(360, 200);
             this.ControlBox = false;
             this.Controls.Add(this.splashProgressBar);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;

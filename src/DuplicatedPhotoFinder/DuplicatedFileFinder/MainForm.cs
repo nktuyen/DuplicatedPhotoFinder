@@ -11,6 +11,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Security.Cryptography;
+using Microsoft.VisualBasic.FileIO;
 
 namespace DuplicatedFileFinder
 {
@@ -19,14 +20,53 @@ namespace DuplicatedFileFinder
     {
         private readonly List<string> Directories = new List<string>();
         private readonly Dictionary<string, List<string>> DuplicatedFilesMap = new Dictionary<string, List<string>>();
+        private readonly Dictionary<Control, bool> ControlEnableState = new Dictionary<Control, bool>();
 
         private event DirectoryListChange DirectoryListChanged;
+
+        enum KeepStrategy
+        {
+            KeepFirstFile=0,
+            KeepLastFile=1,
+            KeepOldestFile=2,
+            KeepNewestFile=3
+        };
+        enum DeletionStrategy
+        {
+            MoveToTrash=0,
+            PermanentDelete=1,
+            MoveToSpecifiedDirectory=2
+        };
+
+        private KeepStrategy KeepOption { get; set; } = MainForm.KeepStrategy.KeepFirstFile;
+        private DeletionStrategy DeletionOption { get; set; } = DeletionStrategy.MoveToTrash;
+        private string SpecifiedMovedDirectory { get; set; } = string.Empty;
 
         public MainForm()
         {
             InitializeComponent();
 
             DirectoryListChanged += new DirectoryListChange(OnDirectoriesListChanged);
+        }
+
+        private void ControlEnableSet(Control ctrl, bool enable)
+        {
+            if (this.InvokeRequired)
+            {
+                this.Invoke(new MethodInvoker(delegate {
+                    ControlEnableState[ctrl] = ctrl.Enabled;
+                    ctrl.Enabled = enable;
+                }));
+            }
+            else {
+                ControlEnableState[ctrl] = ctrl.Enabled;
+                ctrl.Enabled = enable;
+            }
+        }
+
+        private void ControlEnableRestore(Control ctrl)
+        {
+            ctrl.Enabled = ControlEnableState[ctrl];
         }
 
         private void OnDirectoriesListChanged(EventArgs e)
@@ -66,6 +106,7 @@ namespace DuplicatedFileFinder
 
         private void AddDirectoryMenuItem_Click(object sender, EventArgs e)
         {
+            DirectoryBrowserDialog.ShowNewFolderButton = false;
             if (DirectoryBrowserDialog.ShowDialog() != DialogResult.OK)
                 return;
             ListViewItem item = null;
@@ -137,6 +178,8 @@ namespace DuplicatedFileFinder
         {
             this.Directories.Clear();
             this.DuplicatedFilesMap.Clear();
+            ResultListView.Items.Clear();
+            ResolveButton.Enabled = ResultListView.Items.Count > 0;
             foreach(ListViewItem item in DirectoriesListView.Items)
             {
                 this.Directories.Add(item.SubItems[1].Text);
@@ -156,30 +199,33 @@ namespace DuplicatedFileFinder
                 StartButton.Invoke(new MethodInvoker(delegate { StartButton.Visible = false; }));
             else
                 StartButton.Visible = false;
+
             if (StopButton.InvokeRequired)
                 StopButton.Invoke(new MethodInvoker(delegate { StopButton.Visible = true; }));
             else
                 StopButton.Visible = true;
+
             if (StatusBar.InvokeRequired)
                 StatusBar.Invoke(new MethodInvoker(delegate {
+                    StatusProgress.Maximum = 100;
+                    StatusProgress.Style = ProgressBarStyle.Marquee;
                     StatusProgress.Visible = true;
                     StatusText.Visible = true;
                     StatusText.Text = string.Empty;
                 }));
             else
             {
+                StatusProgress.Maximum = 100;
+                StatusProgress.Style = ProgressBarStyle.Marquee;
                 StatusProgress.Visible = true;
                 StatusText.Visible = true;
                 StatusText.Text = string.Empty;
             }
-            if (DirectoriesListView.InvokeRequired)
-                DirectoriesListView.Invoke(new MethodInvoker(delegate { DirectoriesListView.Enabled = false; }));
-            else
-                DirectoriesListView.Enabled = false;
-            if (FilterGroupBox.InvokeRequired)
-                FilterGroupBox.Invoke(new MethodInvoker(delegate { FilterGroupBox.Enabled = false; }));
-            else
-                FilterGroupBox.Enabled = false;
+
+            ControlEnableSet(DirectoriesListView, false);
+            ControlEnableSet(ResultListView, false);
+            ControlEnableSet(FilterGroupBox, false);
+            ControlEnableSet(ResolveButton, false);
         }
 
         private void AnalyzerWorker_DoWork(object sender, DoWorkEventArgs e)
@@ -194,7 +240,7 @@ namespace DuplicatedFileFinder
                 if (AnalyzerWorker.CancellationPending)
                     break;
                 List<string> duplicatedFiles = this.DuplicatedFilesMap[hash];
-                if(duplicatedFiles.Count>1)
+                if(duplicatedFiles.Count > 1)
                 {
                     if (ResultListView.InvokeRequired) {
                         ResultListView.Invoke(new MethodInvoker(delegate {
@@ -211,6 +257,14 @@ namespace DuplicatedFileFinder
                         item.SubItems.Add(hash);
                         item.SubItems.Add(string.Format("{0}", duplicatedFiles.Count));
                     }
+                }
+                if (ResolveButton.InvokeRequired)
+                {
+                    ResolveButton.Invoke(new MethodInvoker(delegate { ResolveButton.Enabled = ResultListView.Items.Count > 0; }));
+                }
+                else
+                {
+                    ResolveButton.Enabled = ResultListView.Items.Count > 0;
                 }
             }
         }
@@ -239,7 +293,7 @@ namespace DuplicatedFileFinder
                     {
                         using (var stream = new System.IO.FileStream(f, FileMode.Open))
                         {
-                            hash = BitConverter.ToString(md5.ComputeHash(stream));
+                            hash = BitConverter.ToString(md5.ComputeHash(stream)).Replace("-","");
                             stream.Close();
                             if (!this.DuplicatedFilesMap.ContainsKey(hash))
                             {
@@ -283,20 +337,19 @@ namespace DuplicatedFileFinder
             if (StatusBar.InvokeRequired)
                 StatusBar.Invoke(new MethodInvoker(delegate {
                     StatusProgress.Visible = false;
+                    StatusText.Text = string.Empty;
 
                 }));
             else
             {
                 StatusProgress.Visible = false;
+                StatusText.Text = string.Empty;
             }
-            if (DirectoriesListView.InvokeRequired)
-                DirectoriesListView.Invoke(new MethodInvoker(delegate { DirectoriesListView.Enabled = true; }));
-            else
-                DirectoriesListView.Enabled = true;
-            if (FilterGroupBox.InvokeRequired)
-                FilterGroupBox.Invoke(new MethodInvoker(delegate { FilterGroupBox.Enabled = true; }));
-            else
-                FilterGroupBox.Enabled = true;
+
+            ControlEnableRestore(DirectoriesListView);
+            ControlEnableRestore(ResultListView);
+            ControlEnableRestore(FilterGroupBox);
+            ControlEnableSet(ResolveButton, this.DuplicatedFilesMap.Count > 0);
         }
 
         private void ResultListView_DoubleClick(object sender, EventArgs e)
@@ -312,7 +365,10 @@ namespace DuplicatedFileFinder
 
         private void ResultListView_KeyUp(object sender, KeyEventArgs e)
         {
-            ResultListView_DoubleClick(sender, e);
+            if (e.KeyCode == Keys.Enter)
+            {
+                ResultListView_DoubleClick(sender, e);
+            }
         }
 
         private void DirectoriesListView_DragEnter(object sender, DragEventArgs e)
@@ -344,6 +400,313 @@ namespace DuplicatedFileFinder
                     DirectoryListChanged?.Invoke(new EventArgs());
                 }
             }
+        }
+
+        private void ResolveButton_Click(object sender, EventArgs e)
+        {
+            if (KeepFirstFileOption.Checked)
+                this.KeepOption = KeepStrategy.KeepFirstFile;
+            else if (KeepLastFileOption.Checked)
+                this.KeepOption = KeepStrategy.KeepLastFile;
+            else if (KeepOldestFileOption.Checked)
+                this.KeepOption = KeepStrategy.KeepOldestFile;
+            else if (KeepNewestFileOption.Checked)
+                this.KeepOption = KeepStrategy.KeepNewestFile;
+
+            if (MoveToTrashOption.Checked)
+                this.DeletionOption = DeletionStrategy.MoveToTrash;
+            else if (PermanentDeleteOption.Checked)
+                this.DeletionOption = DeletionStrategy.PermanentDelete;
+            else if (MoveToSpecifiedDirOption.Checked)
+            {
+                this.DeletionOption = DeletionStrategy.MoveToSpecifiedDirectory;
+                if (this.SpecifiedMovedDirectory == string.Empty)
+                {
+                    MessageBox.Show("Destination directory is not specified", "Move to specified directory", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+            }
+
+            ResolverWorker.RunWorkerAsync(this.DuplicatedFilesMap);
+        }
+
+        private void ResolverWorker_Prepare(object sender, DoWorkEventArgs e)
+        {
+            if (StatusBar.InvokeRequired)
+                StatusBar.Invoke(new MethodInvoker(delegate {
+                    StatusProgress.Maximum = ResultListView.Items.Count;
+                    StatusProgress.Style = ProgressBarStyle.Continuous;
+                    StatusProgress.Visible = true;
+                    StatusText.Visible = true;
+                    StatusText.Text = string.Empty;
+                }));
+            else
+            {
+                StatusProgress.Maximum = ResultListView.Items.Count;
+                StatusProgress.Style = ProgressBarStyle.Continuous;
+                StatusProgress.Visible = true;
+                StatusText.Visible = true;
+                StatusText.Text = string.Empty;
+            }
+
+            if (ResolveButton.InvokeRequired)
+            {
+                ResolveButton.Invoke(new MethodInvoker(delegate
+                {
+                    ResolveButton.Visible = false;
+                }));
+            }
+            else
+            {
+                ResolveButton.Visible = false;
+            }
+
+            if (ResolveCancelButton.InvokeRequired)
+            {
+                ResolveCancelButton.Invoke(new MethodInvoker(delegate
+                {
+                    ResolveCancelButton.Visible = true;
+                }));
+            }
+            else
+            {
+                ResolveCancelButton.Visible = true;
+            }
+
+            ControlEnableSet(DirectoriesListView, false);
+            ControlEnableSet(FilterGroupBox, false);
+            ControlEnableSet(StartButton, false);
+            ControlEnableSet(ResultListView, false);
+        }
+
+        private void ResolverWorker_DoWork(object sender, DoWorkEventArgs e)
+        {
+            ResolverWorker_Prepare(sender, e);
+
+            for(int i = 0; i < ResultListView.Items.Count; i++)
+            {
+                if (ResolverWorker.CancellationPending)
+                    break;
+
+                List<string> duplicatedFiles = null;
+                string hash = string.Empty;
+                DateTime oldestTime = new DateTime();
+                DateTime newestTime = new DateTime();
+
+                if (ResultListView.InvokeRequired)
+                {
+                    ResultListView.Invoke(new MethodInvoker(delegate
+                    {
+                        duplicatedFiles = ResultListView.Items[i].Tag as List<string>;
+                        hash = ResultListView.Items[i].SubItems[1].Text;
+                    }));
+                }
+                else
+                {
+                    duplicatedFiles = ResultListView.Items[i].Tag as List<string>;
+                    hash = ResultListView.Items[i].SubItems[1].Text;
+                }
+
+                for (int j = 0; j < duplicatedFiles.Count; j++)
+                {
+                    DateTime fileCreateTime = File.GetCreationTime(duplicatedFiles[j]);
+                    if (j == 0)
+                    {
+                        oldestTime = fileCreateTime;
+                        newestTime = fileCreateTime;
+                    }
+                    else
+                    {
+                        if (fileCreateTime < oldestTime)
+                            oldestTime = fileCreateTime;
+
+                        if (fileCreateTime > newestTime)
+                            newestTime = fileCreateTime;
+                    }
+                }
+
+                for (int j = 0; j < duplicatedFiles.Count; j++)
+                {
+                    if (StatusBar.InvokeRequired)
+                    {
+                        StatusBar.Invoke(new MethodInvoker(delegate
+                        {
+                            StatusText.Text = duplicatedFiles[j];
+                        }));
+                    }
+                    else
+                    {
+                        StatusText.Text = duplicatedFiles[j];
+                    }
+
+                    DateTime fileCreateTime = File.GetCreationTime(duplicatedFiles[j]);
+                    if ((this.KeepOption == KeepStrategy.KeepFirstFile && j > 0) 
+                        || (this.KeepOption == KeepStrategy.KeepLastFile && j < (duplicatedFiles.Count-1))
+                        || (this.KeepOption == KeepStrategy.KeepOldestFile && fileCreateTime > oldestTime)
+                        || (this.KeepOption == KeepStrategy.KeepNewestFile && fileCreateTime < newestTime))
+                    {
+                        if (this.DeletionOption == DeletionStrategy.MoveToTrash)
+                        {
+                            try
+                            {
+                                FileSystem.DeleteFile(duplicatedFiles[j], UIOption.OnlyErrorDialogs, RecycleOption.SendToRecycleBin);
+                            }
+                            catch (Exception ex)
+                            {
+                                Debug.Print(ex.Message);
+                            }
+                        }
+                        else if (this.DeletionOption == DeletionStrategy.PermanentDelete)
+                        {
+                            try
+                            {
+                                File.Delete(duplicatedFiles[j]);
+                            }
+                            catch (Exception ex)
+                            {
+                                Debug.Print(ex.Message);
+                            }
+                        }
+                        else if (this.DeletionOption == DeletionStrategy.MoveToSpecifiedDirectory)
+                        {
+                            string destinationMoveDir = this.SpecifiedMovedDirectory + "\\" + hash;
+                            if (!Directory.Exists(destinationMoveDir))
+                            {
+                                try
+                                {
+                                    Directory.CreateDirectory(destinationMoveDir);
+                                }
+                                catch (Exception ex1)
+                                {
+                                    Debug.Print(ex1.Message);
+                                }
+                            }
+
+                            FileInfo fi = new FileInfo(duplicatedFiles[j]);
+                            string destinationMoveFilename = destinationMoveDir + "\\" + fi.Name;
+                            try
+                            {
+                                File.Move(duplicatedFiles[j], destinationMoveFilename);
+                            }
+                            catch (Exception ex2)
+                            {
+                                Debug.Print(ex2.Message);
+                            }
+                        }
+                    }
+                }
+
+                for (int k = duplicatedFiles.Count-1;k >= 0; k--)
+                {
+                    if (!File.Exists(duplicatedFiles[k]))
+                        duplicatedFiles.RemoveAt(k);
+                }
+
+                if (ResultListView.InvokeRequired)
+                {
+                    ResultListView.Invoke(new MethodInvoker(delegate
+                    {
+                        ListViewItem selItem = ResultListView.Items[i] as ListViewItem;
+                        selItem.SubItems[2].Text = string.Format("{0}", duplicatedFiles.Count);
+                    }));
+                }
+                else
+                {
+                    ListViewItem selItem = ResultListView.Items[i] as ListViewItem;
+                    selItem.SubItems[2].Text = string.Format("{0}", duplicatedFiles.Count);
+                }
+            }
+
+        }
+
+        private void ResolverWorker_ProgressChanged(object sender, ProgressChangedEventArgs e)
+        {
+            if (StatusBar.InvokeRequired)
+            {
+                StatusBar.Invoke(new MethodInvoker(delegate
+                {
+                    StatusProgress.Value = e.ProgressPercentage;
+                }));
+            }
+            else
+            {
+                StatusProgress.Value = e.ProgressPercentage;
+            }
+        }
+
+        private void ResolverWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            if (StatusBar.InvokeRequired)
+                StatusBar.Invoke(new MethodInvoker(delegate {
+                    StatusProgress.Visible = false;
+                    StatusText.Visible = false;
+                    StatusText.Text = string.Empty;
+                }));
+            else
+            {
+                StatusProgress.Visible = false;
+                StatusText.Visible = false;
+                StatusText.Text = string.Empty;
+            }
+
+            if (ResolveButton.InvokeRequired)
+            {
+                ResolveButton.Invoke(new MethodInvoker(delegate
+                {
+                    ResolveButton.Visible = true;
+                }));
+            }
+            else
+            {
+                ResolveButton.Visible = true;
+            }
+
+            if (ResolveCancelButton.InvokeRequired)
+            {
+                ResolveCancelButton.Invoke(new MethodInvoker(delegate
+                {
+                    ResolveCancelButton.Visible = false;
+                }));
+            }
+            else
+            {
+                ResolveCancelButton.Visible = false;
+            }
+
+            ControlEnableRestore(DirectoriesListView);
+            ControlEnableRestore(FilterGroupBox );
+            ControlEnableRestore(StartButton);
+            ControlEnableRestore(ResultListView);
+        }
+
+        private void ResolveCancelButton_Click(object sender, EventArgs e)
+        {
+            if (ResolverWorker.IsBusy)
+                ResolverWorker.CancelAsync();
+        }
+
+        private void BrowseSpecifiedDirButton_Click(object sender, EventArgs e)
+        {
+            DirectoryBrowserDialog.ShowNewFolderButton = true;
+            if (DirectoryBrowserDialog.ShowDialog() != DialogResult.OK)
+                return;
+
+            MoveToSpecifiedDirOption.Checked = true;
+            this.SpecifiedMovedDirectory = DirectoryBrowserDialog.SelectedPath;
+            SpecifiedMoveToPathLabel.Text = this.SpecifiedMovedDirectory;
+        }
+
+        private void MoveToSpecifiedDirOption_Click(object sender, EventArgs e)
+        {
+            if (this.SpecifiedMovedDirectory == string.Empty)
+            {
+                BrowseSpecifiedDirButton_Click(sender, e);
+            }
+        }
+
+        private void ResultListView_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
         }
     }
 }
