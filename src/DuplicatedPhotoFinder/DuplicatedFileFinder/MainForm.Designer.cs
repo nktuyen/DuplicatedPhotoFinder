@@ -64,10 +64,10 @@
             this.PermanentDeleteOption = new System.Windows.Forms.RadioButton();
             this.MoveToTrashOption = new System.Windows.Forms.RadioButton();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.KeepNewestFileOption = new System.Windows.Forms.RadioButton();
+            this.KeepOldestFileOption = new System.Windows.Forms.RadioButton();
             this.KeepLastFileOption = new System.Windows.Forms.RadioButton();
             this.KeepFirstFileOption = new System.Windows.Forms.RadioButton();
-            this.KeepOldestFileOption = new System.Windows.Forms.RadioButton();
-            this.KeepNewestFileOption = new System.Windows.Forms.RadioButton();
             this.ResultListView = new DuplicatedFileFinder.ListViewEx();
             this.colIndex = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.colItem = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
@@ -455,6 +455,26 @@
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Keep";
             // 
+            // KeepNewestFileOption
+            // 
+            this.KeepNewestFileOption.AutoSize = true;
+            this.KeepNewestFileOption.Location = new System.Drawing.Point(100, 36);
+            this.KeepNewestFileOption.Name = "KeepNewestFileOption";
+            this.KeepNewestFileOption.Size = new System.Drawing.Size(85, 19);
+            this.KeepNewestFileOption.TabIndex = 0;
+            this.KeepNewestFileOption.Text = "Newest file";
+            this.KeepNewestFileOption.UseVisualStyleBackColor = true;
+            // 
+            // KeepOldestFileOption
+            // 
+            this.KeepOldestFileOption.AutoSize = true;
+            this.KeepOldestFileOption.Location = new System.Drawing.Point(19, 36);
+            this.KeepOldestFileOption.Name = "KeepOldestFileOption";
+            this.KeepOldestFileOption.Size = new System.Drawing.Size(79, 19);
+            this.KeepOldestFileOption.TabIndex = 0;
+            this.KeepOldestFileOption.Text = "Oldest file";
+            this.KeepOldestFileOption.UseVisualStyleBackColor = true;
+            // 
             // KeepLastFileOption
             // 
             this.KeepLastFileOption.AutoSize = true;
@@ -476,26 +496,6 @@
             this.KeepFirstFileOption.TabStop = true;
             this.KeepFirstFileOption.Text = "First file";
             this.KeepFirstFileOption.UseVisualStyleBackColor = true;
-            // 
-            // KeepOldestFileOption
-            // 
-            this.KeepOldestFileOption.AutoSize = true;
-            this.KeepOldestFileOption.Location = new System.Drawing.Point(19, 36);
-            this.KeepOldestFileOption.Name = "KeepOldestFileOption";
-            this.KeepOldestFileOption.Size = new System.Drawing.Size(79, 19);
-            this.KeepOldestFileOption.TabIndex = 0;
-            this.KeepOldestFileOption.Text = "Oldest file";
-            this.KeepOldestFileOption.UseVisualStyleBackColor = true;
-            // 
-            // KeepNewestFileOption
-            // 
-            this.KeepNewestFileOption.AutoSize = true;
-            this.KeepNewestFileOption.Location = new System.Drawing.Point(100, 36);
-            this.KeepNewestFileOption.Name = "KeepNewestFileOption";
-            this.KeepNewestFileOption.Size = new System.Drawing.Size(85, 19);
-            this.KeepNewestFileOption.TabIndex = 0;
-            this.KeepNewestFileOption.Text = "Newest file";
-            this.KeepNewestFileOption.UseVisualStyleBackColor = true;
             // 
             // ResultListView
             // 

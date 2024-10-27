@@ -226,6 +226,7 @@ namespace DuplicatedFileFinder
             ControlEnableSet(ResultListView, false);
             ControlEnableSet(FilterGroupBox, false);
             ControlEnableSet(ResolveButton, false);
+            ControlEnableSet(StrategyGroupbox, false);
         }
 
         private void AnalyzerWorker_DoWork(object sender, DoWorkEventArgs e)
@@ -349,6 +350,7 @@ namespace DuplicatedFileFinder
             ControlEnableRestore(DirectoriesListView);
             ControlEnableRestore(ResultListView);
             ControlEnableRestore(FilterGroupBox);
+            ControlEnableRestore(StrategyGroupbox);
             ControlEnableSet(ResolveButton, this.DuplicatedFilesMap.Count > 0);
         }
 
@@ -475,6 +477,7 @@ namespace DuplicatedFileFinder
 
             ControlEnableSet(DirectoriesListView, false);
             ControlEnableSet(FilterGroupBox, false);
+            ControlEnableSet(StrategyGroupbox, false);
             ControlEnableSet(StartButton, false);
             ControlEnableSet(ResultListView, false);
         }
@@ -675,6 +678,7 @@ namespace DuplicatedFileFinder
 
             ControlEnableRestore(DirectoriesListView);
             ControlEnableRestore(FilterGroupBox );
+            ControlEnableRestore(StrategyGroupbox);
             ControlEnableRestore(StartButton);
             ControlEnableRestore(ResultListView);
         }
