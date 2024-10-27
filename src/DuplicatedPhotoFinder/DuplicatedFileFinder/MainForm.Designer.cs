@@ -38,7 +38,6 @@
             this.RemoveAllDirectoryMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.DirectoryBrowserDialog = new System.Windows.Forms.FolderBrowserDialog();
             this.StartButton = new System.Windows.Forms.Button();
-            this.ResultListView = new System.Windows.Forms.ListView();
             this.FilterGroupBox = new System.Windows.Forms.GroupBox();
             this.FilterSizeUnitCombo = new System.Windows.Forms.ComboBox();
             this.FilterSizeValueTextBox = new System.Windows.Forms.TextBox();
@@ -53,6 +52,11 @@
             this.StatusProgress = new System.Windows.Forms.ToolStripProgressBar();
             this.StopButton = new System.Windows.Forms.Button();
             this.AnalyzerWorker = new System.ComponentModel.BackgroundWorker();
+            this.FileImageList = new System.Windows.Forms.ImageList(this.components);
+            this.ResultListView = new DuplicatedFileFinder.ListViewEx();
+            this.colIndex = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.colItem = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.colDuplicatedCount = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.directoriesListContextMenu.SuspendLayout();
             this.FilterGroupBox.SuspendLayout();
             this.StatusBar.SuspendLayout();
@@ -135,23 +139,6 @@
             this.StartButton.Text = "&Start";
             this.StartButton.UseVisualStyleBackColor = true;
             this.StartButton.Click += new System.EventHandler(this.StartButton_Click);
-            // 
-            // ResultListView
-            // 
-            this.ResultListView.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.ResultListView.FullRowSelect = true;
-            this.ResultListView.GridLines = true;
-            this.ResultListView.HideSelection = false;
-            this.ResultListView.Location = new System.Drawing.Point(12, 232);
-            this.ResultListView.MultiSelect = false;
-            this.ResultListView.Name = "ResultListView";
-            this.ResultListView.ShowItemToolTips = true;
-            this.ResultListView.Size = new System.Drawing.Size(657, 304);
-            this.ResultListView.TabIndex = 4;
-            this.ResultListView.UseCompatibleStateImageBehavior = false;
-            this.ResultListView.View = System.Windows.Forms.View.Details;
             // 
             // FilterGroupBox
             // 
@@ -279,23 +266,23 @@
             // 
             // StatusText
             // 
-            this.StatusText.AutoSize = false;
+            this.StatusText.Margin = new System.Windows.Forms.Padding(10, 3, 0, 2);
             this.StatusText.Name = "StatusText";
-            this.StatusText.Size = new System.Drawing.Size(891, 17);
+            this.StatusText.Size = new System.Drawing.Size(759, 17);
             this.StatusText.Spring = true;
-            this.StatusText.Visible = false;
+            this.StatusText.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // StatusProgress
             // 
             this.StatusProgress.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
             this.StatusProgress.Name = "StatusProgress";
             this.StatusProgress.Size = new System.Drawing.Size(100, 16);
+            this.StatusProgress.Style = System.Windows.Forms.ProgressBarStyle.Marquee;
             this.StatusProgress.Visible = false;
             // 
             // StopButton
             // 
             this.StopButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.StopButton.Enabled = false;
             this.StopButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.StopButton.Location = new System.Drawing.Point(676, 24);
             this.StopButton.Name = "StopButton";
@@ -314,6 +301,51 @@
             this.AnalyzerWorker.ProgressChanged += new System.ComponentModel.ProgressChangedEventHandler(this.AnalyzerWorker_ProgressChanged);
             this.AnalyzerWorker.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.AnalyzerWorker_RunWorkerCompleted);
             // 
+            // FileImageList
+            // 
+            this.FileImageList.ColorDepth = System.Windows.Forms.ColorDepth.Depth8Bit;
+            this.FileImageList.ImageSize = new System.Drawing.Size(16, 16);
+            this.FileImageList.TransparentColor = System.Drawing.Color.Transparent;
+            // 
+            // ResultListView
+            // 
+            this.ResultListView.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.ResultListView.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.ResultListView.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.colIndex,
+            this.colItem,
+            this.colDuplicatedCount});
+            this.ResultListView.FullRowSelect = true;
+            this.ResultListView.GridLines = true;
+            this.ResultListView.HideSelection = false;
+            this.ResultListView.LargeImageList = this.FileImageList;
+            this.ResultListView.Location = new System.Drawing.Point(12, 232);
+            this.ResultListView.MultiSelect = false;
+            this.ResultListView.Name = "ResultListView";
+            this.ResultListView.ShowItemToolTips = true;
+            this.ResultListView.Size = new System.Drawing.Size(657, 304);
+            this.ResultListView.SmallImageList = this.FileImageList;
+            this.ResultListView.TabIndex = 4;
+            this.ResultListView.UseCompatibleStateImageBehavior = false;
+            this.ResultListView.View = System.Windows.Forms.View.Details;
+            this.ResultListView.DoubleClick += new System.EventHandler(this.ResultListView_DoubleClick);
+            // 
+            // colIndex
+            // 
+            this.colIndex.Text = "#";
+            // 
+            // colItem
+            // 
+            this.colItem.Text = "Item";
+            this.colItem.Width = 540;
+            // 
+            // colDuplicatedCount
+            // 
+            this.colDuplicatedCount.Text = "Count";
+            this.colDuplicatedCount.Width = 40;
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -325,8 +357,8 @@
             this.Controls.Add(this.FilterGroupBox);
             this.Controls.Add(this.ResultListView);
             this.Controls.Add(this.DirectoriesListView);
-            this.Controls.Add(this.StartButton);
             this.Controls.Add(this.StopButton);
+            this.Controls.Add(this.StartButton);
             this.KeyPreview = true;
             this.MinimumSize = new System.Drawing.Size(800, 600);
             this.Name = "MainForm";
@@ -355,7 +387,7 @@
         private System.Windows.Forms.ToolStripMenuItem RemoveAllDirectoryMenuItem;
         private System.Windows.Forms.FolderBrowserDialog DirectoryBrowserDialog;
         private System.Windows.Forms.Button StartButton;
-        private System.Windows.Forms.ListView ResultListView;
+        private  ListViewEx ResultListView;
         private System.Windows.Forms.GroupBox FilterGroupBox;
         private System.Windows.Forms.TextBox FilterFileTypesTextBox;
         private System.Windows.Forms.Label label1;
@@ -370,5 +402,9 @@
         private System.Windows.Forms.ToolStripProgressBar StatusProgress;
         private System.Windows.Forms.Button StopButton;
         private System.ComponentModel.BackgroundWorker AnalyzerWorker;
+        private System.Windows.Forms.ColumnHeader colIndex;
+        private System.Windows.Forms.ColumnHeader colItem;
+        private System.Windows.Forms.ColumnHeader colDuplicatedCount;
+        private System.Windows.Forms.ImageList FileImageList;
     }
 }

@@ -42,10 +42,12 @@
             // 
             // splashProgressBar
             // 
+            this.splashProgressBar.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(192)))), ((int)(((byte)(192)))));
+            this.splashProgressBar.ForeColor = System.Drawing.Color.Silver;
             this.splashProgressBar.Location = new System.Drawing.Point(2, 375);
             this.splashProgressBar.Name = "splashProgressBar";
             this.splashProgressBar.Size = new System.Drawing.Size(595, 23);
-            this.splashProgressBar.Style = System.Windows.Forms.ProgressBarStyle.Continuous;
+            this.splashProgressBar.Style = System.Windows.Forms.ProgressBarStyle.Marquee;
             this.splashProgressBar.TabIndex = 0;
             // 
             // SplashForm
