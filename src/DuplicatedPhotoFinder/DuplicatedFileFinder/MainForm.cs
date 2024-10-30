@@ -23,6 +23,7 @@ namespace DuplicatedFileFinder
         private readonly Dictionary<Control, bool> ControlEnableState = new Dictionary<Control, bool>();
 
         private event DirectoryListChange DirectoryListChanged;
+        private  Stopwatch Stopwatch { get; set; } = new Stopwatch();
 
         enum KeepStrategy
         {
@@ -231,6 +232,7 @@ namespace DuplicatedFileFinder
 
         private void AnalyzerWorker_DoWork(object sender, DoWorkEventArgs e)
         {
+            this.Stopwatch.Start();
             AnalyzerWorker_Prepare(sender, e);
 
             foreach (string path in this.Directories)
@@ -352,6 +354,9 @@ namespace DuplicatedFileFinder
             ControlEnableRestore(FilterGroupBox);
             ControlEnableRestore(StrategyGroupbox);
             ControlEnableSet(ResolveButton, this.DuplicatedFilesMap.Count > 0);
+            this.Stopwatch.Stop();
+            if(!e.Cancelled)
+                MessageBox.Show(string.Format("Elapsed time:{0} ms", this.Stopwatch.ElapsedMilliseconds));
         }
 
         private void ResultListView_DoubleClick(object sender, EventArgs e)
@@ -484,6 +489,7 @@ namespace DuplicatedFileFinder
 
         private void ResolverWorker_DoWork(object sender, DoWorkEventArgs e)
         {
+            this.Stopwatch.Start();
             ResolverWorker_Prepare(sender, e);
 
             for(int i = 0; i < ResultListView.Items.Count; i++)
@@ -681,6 +687,9 @@ namespace DuplicatedFileFinder
             ControlEnableRestore(StrategyGroupbox);
             ControlEnableRestore(StartButton);
             ControlEnableRestore(ResultListView);
+            this.Stopwatch.Stop();
+            if(!e.Cancelled)
+                MessageBox.Show(string.Format("Elapsed time:{0} ms", this.Stopwatch.ElapsedMilliseconds));
         }
 
         private void ResolveCancelButton_Click(object sender, EventArgs e)
