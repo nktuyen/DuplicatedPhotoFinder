@@ -24,6 +24,7 @@ namespace DuplicatedFileFinder
 
         private event DirectoryListChange DirectoryListChanged;
         private  Stopwatch Stopwatch { get; set; } = new Stopwatch();
+        private CancellationTokenSource CancellationTokenSource { get; set; } = new CancellationTokenSource();
 
         enum KeepStrategy
         {
@@ -185,6 +186,7 @@ namespace DuplicatedFileFinder
             {
                 this.Directories.Add(item.SubItems[1].Text);
             }
+            this.CancellationTokenSource = new CancellationTokenSource();
             AnalyzerWorker.RunWorkerAsync(this.Directories);
         }
 
@@ -192,6 +194,8 @@ namespace DuplicatedFileFinder
         {
             if (AnalyzerWorker.IsBusy)
                 AnalyzerWorker.CancelAsync();
+            if (!this.CancellationTokenSource.IsCancellationRequested)
+                this.CancellationTokenSource.Cancel();
         }
 
         private void AnalyzerWorker_Prepare(object sender, EventArgs e)
@@ -236,7 +240,7 @@ namespace DuplicatedFileFinder
             AnalyzerWorker_Prepare(sender, e);
 
             foreach (string path in this.Directories)
-                this.DirSearch(path, FilterFileTypesTextBox.Text);
+                this.DirSearchAsync(path, FilterFileTypesTextBox.Text);
 
             foreach(string hash in this.DuplicatedFilesMap.Keys)
             {
@@ -277,7 +281,32 @@ namespace DuplicatedFileFinder
             
         }
 
-        private void DirSearch(string sDir, string sExts)
+        private string CalcMD5(string file, CancellationToken cancellationToken)
+        {
+            Debug.Print(file);
+            using (var stream = File.OpenRead(file))
+            using (var md5 = MD5.Create())
+            {
+                const int blockSize = 1024 * 1024 * 4;
+                var buffer = new byte[blockSize];
+                long offset = 0;
+
+                while (true)
+                {
+                    cancellationToken.ThrowIfCancellationRequested();
+                    var read = stream.Read(buffer, 0, blockSize);
+                    if (stream.Position == stream.Length)
+                    {
+                        md5.TransformFinalBlock(buffer, 0, read);
+                        break;
+                    }
+                    offset += md5.TransformBlock(buffer, 0, buffer.Length, buffer, 0);
+                }
+                return System.BitConverter.ToString(md5.Hash).Replace("-", "");
+            }
+        }
+
+        private void DirSearchAsync(string sDir, string sExts)
         {
             try
             {
@@ -285,40 +314,33 @@ namespace DuplicatedFileFinder
                 {
                     if (AnalyzerWorker.CancellationPending)
                         break;
-                    string hash = string.Empty;
 
                     if (StatusBar.InvokeRequired)
                         StatusBar.Invoke(new MethodInvoker(delegate { StatusText.Text = f; }));
                     else
                         StatusText.Text = f;
 
-                    using (var md5 = MD5.Create())
+                    string hash = CalcMD5(f, this.CancellationTokenSource.Token);
+
+                    if (!this.DuplicatedFilesMap.ContainsKey(hash))
                     {
-                        using (var stream = new System.IO.FileStream(f, FileMode.Open))
-                        {
-                            hash = BitConverter.ToString(md5.ComputeHash(stream)).Replace("-","");
-                            stream.Close();
-                            if (!this.DuplicatedFilesMap.ContainsKey(hash))
-                            {
-                                List<string> duplicatedFiles = new List<string>();
-                                duplicatedFiles.Add(f);
-                                this.DuplicatedFilesMap[hash] = duplicatedFiles;
-                            }
-                            else
-                            {
-                                List<string> duplicatedFiles = this.DuplicatedFilesMap[hash];
-                                if (!duplicatedFiles.Contains(f))
-                                    duplicatedFiles.Add(f);
-                            }
-                        }
-                    }                  
+                        List<string> duplicatedFiles = new List<string>();
+                        duplicatedFiles.Add(f);
+                        this.DuplicatedFilesMap[hash] = duplicatedFiles;
+                    }
+                    else
+                    {
+                        List<string> duplicatedFiles = this.DuplicatedFilesMap[hash];
+                        if (!duplicatedFiles.Contains(f))
+                            duplicatedFiles.Add(f);
+                    }
                 }
 
                 foreach (string d in Directory.GetDirectories(sDir))
                 {
                     if (AnalyzerWorker.CancellationPending)
                         break;
-                    this.DirSearch(d, sExts);
+                    this.DirSearchAsync(d, sExts);
                 }
             }
             catch (System.Exception ex)
