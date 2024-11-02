@@ -38,16 +38,23 @@ namespace DuplicatedFileFinder
 
         private void FileListBox_SelectedIndexChanged(object sender, EventArgs e)
         {
-            try
+            string file = FileListBox.SelectedItem as string;
+            string ext = System.IO.Path.GetExtension(file).ToUpper();
+            PreviewPicture.Image = null;
+            if (ext == ".JPG" || ext == ".JPEG" || ext == ".PNG" || ext == ".BMP" || ext == ".GIF" || ext == ".TIFF")
             {
-                using (var stream = new FileStream (FileListBox.SelectedItem as string, FileMode.Open))
+                try
                 {
-                    PreviewPicture.Image = Image.FromStream(stream);
-                    stream.Close();
+                    using (var stream = new FileStream(file, FileMode.Open))
+                    {
+                        PreviewPicture.Image = Image.FromStream(stream);
+                        stream.Close();
+                    }
                 }
-            }
-            catch (Exception ex){
-                Debug.Print(ex.Message);
+                catch (Exception ex)
+                {
+                    Debug.Print(ex.Message);
+                }
             }
         }
 

@@ -378,7 +378,7 @@ namespace DuplicatedFileFinder
             ControlEnableSet(ResolveButton, this.DuplicatedFilesMap.Count > 0);
             this.Stopwatch.Stop();
             if(!e.Cancelled)
-                MessageBox.Show(string.Format("Elapsed time:{0} ms", this.Stopwatch.ElapsedMilliseconds));
+                Debug.Print(string.Format("Elapsed time:{0} ms", this.Stopwatch.ElapsedMilliseconds));
         }
 
         private void ResultListView_DoubleClick(object sender, EventArgs e)
@@ -711,7 +711,7 @@ namespace DuplicatedFileFinder
             ControlEnableRestore(ResultListView);
             this.Stopwatch.Stop();
             if(!e.Cancelled)
-                MessageBox.Show(string.Format("Elapsed time:{0} ms", this.Stopwatch.ElapsedMilliseconds));
+                Debug.Print(string.Format("Elapsed time:{0} ms", this.Stopwatch.ElapsedMilliseconds));
         }
 
         private void ResolveCancelButton_Click(object sender, EventArgs e)

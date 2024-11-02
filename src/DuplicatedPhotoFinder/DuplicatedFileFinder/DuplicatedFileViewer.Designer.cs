@@ -42,22 +42,27 @@
             // 
             // PreviewPicture
             // 
-            this.PreviewPicture.Location = new System.Drawing.Point(532, 12);
+            this.PreviewPicture.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.PreviewPicture.Location = new System.Drawing.Point(765, 12);
             this.PreviewPicture.Name = "PreviewPicture";
-            this.PreviewPicture.Size = new System.Drawing.Size(240, 240);
+            this.PreviewPicture.Size = new System.Drawing.Size(240, 229);
             this.PreviewPicture.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.PreviewPicture.TabIndex = 0;
             this.PreviewPicture.TabStop = false;
             // 
             // FileListBox
             // 
+            this.FileListBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.FileListBox.ContextMenuStrip = this.FilePreviewContextMenu;
             this.FileListBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.FileListBox.FormattingEnabled = true;
             this.FileListBox.ItemHeight = 16;
             this.FileListBox.Location = new System.Drawing.Point(12, 12);
             this.FileListBox.Name = "FileListBox";
-            this.FileListBox.Size = new System.Drawing.Size(514, 244);
+            this.FileListBox.Size = new System.Drawing.Size(747, 228);
             this.FileListBox.TabIndex = 1;
             this.FileListBox.SelectedIndexChanged += new System.EventHandler(this.FileListBox_SelectedIndexChanged);
             this.FileListBox.DoubleClick += new System.EventHandler(this.FileListBox_DoubleClick);
@@ -71,7 +76,7 @@
             this.FilePreviewMoveToTrashMenuItem,
             this.FilePreviewDeleteMenuItem});
             this.FilePreviewContextMenu.Name = "FilePreviewContextMenu";
-            this.FilePreviewContextMenu.Size = new System.Drawing.Size(193, 114);
+            this.FilePreviewContextMenu.Size = new System.Drawing.Size(193, 92);
             this.FilePreviewContextMenu.Opening += new System.ComponentModel.CancelEventHandler(this.FilePreviewContextMenu_Opening);
             // 
             // FilePreviewOpenMenuItem
@@ -110,7 +115,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(784, 263);
+            this.ClientSize = new System.Drawing.Size(1017, 252);
             this.Controls.Add(this.FileListBox);
             this.Controls.Add(this.PreviewPicture);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
