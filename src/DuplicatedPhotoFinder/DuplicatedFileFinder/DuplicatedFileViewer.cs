@@ -10,7 +10,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Microsoft.VisualBasic.FileIO;
-
+using FileFormat.Heic.Decoder;
 
 namespace DuplicatedFileFinder
 {
@@ -49,6 +49,33 @@ namespace DuplicatedFileFinder
                     {
                         PreviewPicture.Image = Image.FromStream(stream);
                         stream.Close();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Debug.Print(ex.Message);
+                }
+            }
+            else if(ext == ".HEIC")
+            {
+                try
+                {
+                    using (var stream = new FileStream(file, FileMode.Open))
+                    {
+                        HeicImage heic = HeicImage.Load(stream);
+                        var pixels = heic.GetByteArray( PixelFormat.Bgra32);
+                        var width = (int)heic.Width;
+                        var height = (int)heic.Height;
+                        var i = 0;
+                        string tempFileName = System.IO.Path.GetTempPath() + Guid.NewGuid().ToString() + ".png";
+                        Bitmap myBitmap = new Bitmap(width, height);
+                        for (int y = 0; y < height; y++)
+                            for (int x = 0; x < width; x++)
+                                myBitmap.SetPixel(x, y, Color.FromArgb(pixels[i++]));
+                        myBitmap.Save(tempFileName);
+                        PreviewPicture.Image = Image.FromFile(tempFileName);
+                        stream.Close();
+                        File.Delete(tempFileName);
                     }
                 }
                 catch (Exception ex)
